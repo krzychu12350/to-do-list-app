@@ -21,7 +21,6 @@ services:
     networks:
       - laravel
     working_dir: /var/www/html
-    # command: php artisan serve --host=0.0.0.0 --port=8000
 
   mysql:
     container_name: mysql
@@ -49,6 +48,16 @@ services:
       - app
     networks:
       - laravel
+
+  node:
+    container_name: to_do_list_node
+    image: node:20-alpine
+    working_dir: /var/www/html
+    volumes:
+      - .:/var/www/html:cached
+    networks:
+      - laravel
+    command: sh -c "npm install && npm run dev"
 
 networks:
   laravel:
