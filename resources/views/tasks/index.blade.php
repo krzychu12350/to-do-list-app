@@ -89,7 +89,7 @@
                 <a href="/tasks/${task.id}/edit" class="bg-yellow-400 px-3 py-1 rounded text-white hover:bg-yellow-500">Edit</a>
                 <button onclick="deleteTask(${task.id})" class="bg-red-500 px-3 py-1 rounded text-white hover:bg-red-600">Delete</button>
                 <a href="/tasks/${task.id}/share" class="bg-purple-500 px-3 py-1 rounded text-white hover:bg-purple-600 inline-block text-center">Share</a>
-
+                <a href="/tasks/${task.id}/history" class="bg-purple-500 px-3 py-1 rounded text-white hover:bg-purple-600 inline-block text-center">History</a>
             </div>
         `;
                 tasksList.appendChild(div);

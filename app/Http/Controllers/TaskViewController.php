@@ -14,8 +14,13 @@ class TaskViewController extends Controller
         return view('tasks.index');
     }
 
-    public function showShareForm(Task $task)
+    public function showShareForm()
     {
         return view('tasks.share');
+    }
+
+    public function showTaskHistory()
+    {
+        return view('tasks.history');
     }
 }

@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Contracts\TaskServiceInterface;
 use App\Models\Task;
+use App\Models\TaskHistory;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -44,7 +45,30 @@ class TaskService implements TaskServiceInterface
     public function update(Task $task, array $data): Task
     {
         $this->authorize($task);
+
+        // Check if there is any difference between original and new data
+        $original = $task->getOriginal();
+
+        $hasChanges = false;
+        foreach ($data as $key => $value) {
+            if (array_key_exists($key, $original) && $original[$key] != $value) {
+                $hasChanges = true;
+                break;
+            }
+        }
+
+        // Update the task first
         $task->update($data);
+
+        // If at least one attribute changed, save the full snapshot
+        if ($hasChanges) {
+            TaskHistory::create([
+                'task_id' => $task->id,
+                'user_id' => auth()->id(),
+                'snapshot' => $task->toArray(),
+            ]);
+        }
+
         return $task;
     }
 

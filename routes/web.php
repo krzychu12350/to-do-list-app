@@ -55,7 +55,7 @@ Route::middleware('auth.token')->group(function () {
     })->name('tasks.show');
 
     Route::get('/tasks/{task}/share', [TaskViewController::class, 'showShareForm'])->name('tasks.share.form');
-
+    Route::get('/tasks/{task}/history', [TaskViewController::class, 'showTaskHistory'])->name('tasks.history');
 });
 
 
