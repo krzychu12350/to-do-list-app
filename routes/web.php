@@ -2,7 +2,12 @@
 
 
 use App\Http\Controllers\TaskPublicController;
+use App\Mail\TaskDueSoonNotification;
 use App\Models\Task;
+use App\Models\User;
+
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TaskViewController;
 
@@ -83,3 +88,34 @@ Route::get('test', function () {
 //});
 
 
+Route::get('/test-email', function () {
+//    $user = User::find(6);
+//    if (!$user) {
+//        return 'No users found.';
+//    }
+//
+//    // For the test, pass dummy data as needed by your Mailable constructor
+//    $tasks = $user->tasks; // empty collection or mock tasks
+//    dd($tasks);
+
+    $dueDate = Carbon::tomorrow(); // e.g. '2025-06-12'
+
+    $tasksDueTomorrow = Task::with('user')
+        ->whereDate('due_date', '=', $dueDate)
+        ->get()
+        ->groupBy('user_id');
+
+   // dd($tasksDueTomorrow);
+
+    foreach ($tasksDueTomorrow as $userId => $tasks) {
+        $user = User::find($userId);
+//        dd($user, $tasks, $dueDate);
+
+       Mail::to($user->email)->send(new TaskDueSoonNotification($user, $tasks, $dueDate));
+    }
+
+
+    //Mail::to($user->email)->send(new TaskDueSoonNotification($user, $tasks, $dueDate));
+
+    return 'Test email sent to ' . $user->email;
+});

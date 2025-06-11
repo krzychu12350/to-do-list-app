@@ -32,14 +32,14 @@ class ValidateAuthToken
 //        }
 
         $all = $request->all();
-        dd($all);
+//        dd($all);
         $token = $request->bearerToken();
 
-        dd($token);
+//        dd($token);
 
-        if (!$token || ! $this->authService->validateToken($token)) {
-            return response()->json(['message' => 'Invalid or expired token.'], 401);
-        }
+//        if (!$token || ! $this->authService->validateToken($token)) {
+//            return response()->json(['message' => 'Invalid or expired token.'], 401);
+//        }
 
         return $next($request);
     }

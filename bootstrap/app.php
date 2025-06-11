@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\ForceJsonResponse;
 use App\Http\Middleware\ValidateAuthToken;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -25,6 +26,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->api([
             ForceJsonResponse::class,
         ]);
+    })
+    ->withSchedule(function (Schedule $schedule){
+        $schedule->command('tasks:send-due-reminders')->daily();
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (ModelNotFoundException $e, Request $request) {
