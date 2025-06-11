@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use Symfony\Component\HttpFoundation\Response;
 use App\Contracts\AuthServiceInterface;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
@@ -22,7 +23,7 @@ class AuthController extends Controller
         return $this->successResponse([
             'user'  => $data['user'],
             'token' => $data['token'],
-        ], 'Registration successful.', 201);
+        ], 'Registration successful.', Response::HTTP_CREATED);
     }
 
     public function login(LoginRequest $request): JsonResponse
@@ -32,13 +33,13 @@ class AuthController extends Controller
         return $this->successResponse([
             'user'  => $data['user'],
             'token' => $data['token'],
-        ], 'Login successful.');
+        ], 'Login successful.', Response::HTTP_OK);
     }
 
     public function logout(Request $request): JsonResponse
     {
         $this->authService->logout($request->user());
 
-        return $this->successResponse(null, 'Logout successful.');
+        return $this->successResponse(null, 'Logout successful.', Response::HTTP_NO_CONTENT);
     }
 }
