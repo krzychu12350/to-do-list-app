@@ -57,10 +57,17 @@
         window.location.href = '{{ route('login') }}';
     }
 
-    // Protect routes
-    const protectedRoutes = ['/dashboard', '/tasks'];
     const currentPath = window.location.pathname;
-    if (protectedRoutes.includes(currentPath) && !token) {
+
+    // Define only the public routes
+    const publicRoutes = ['/login', '/register'];
+
+    // Allow any path that starts with /tasks/public/
+    const isPublic =
+        publicRoutes.includes(currentPath) ||
+        currentPath.startsWith('/tasks/public/');
+
+    if (!isPublic && !token) {
         window.location.href = '/login';
     }
 </script>
