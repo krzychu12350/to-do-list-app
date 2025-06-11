@@ -31,7 +31,7 @@
 
 @section('scripts')
     <script>
-        document.getElementById('registerForm').addEventListener('submit', async function(e) {
+        document.getElementById('registerForm').addEventListener('submit', async function (e) {
             e.preventDefault();
 
             const formData = {
@@ -51,12 +51,13 @@
                 });
 
                 const data = await response.json();
+                const token = data.data.token;
+                console.log(data.data.token);
 
                 if (response.ok) {
                     alert(data.message || 'Registration successful!');
-                    console.log(data)
-                    localStorage.setItem('auth_token', data.token);
-                     window.location.href = '/dashboard'; // Redirect as needed
+                    localStorage.setItem('auth_token', token);
+                    window.location.href = '/dashboard';
                 } else {
                     alert(data.message || 'Registration failed!');
                 }
