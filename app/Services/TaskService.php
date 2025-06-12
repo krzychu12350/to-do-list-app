@@ -12,6 +12,10 @@ use Illuminate\Http\Request;
 
 class TaskService implements TaskServiceInterface
 {
+    public function __construct(
+        private readonly GoogleCalendarService $calendarService
+    ) {}
+
     public function list(Request $request): Collection|LengthAwarePaginator
     {
         $query = Task::where('user_id', Auth::id());
@@ -33,7 +37,13 @@ class TaskService implements TaskServiceInterface
 
     public function create(array $data): Task
     {
-        return Auth::user()->tasks()->create($data);
+        $task = Auth::user()->tasks()->create($data);
+
+        if ($data['sync_with_google_calendar']) {
+            $this->calendarService->createEventForTask($task);
+        }
+
+        return $task;
     }
 
     public function get(Task $task): Task

@@ -51,6 +51,18 @@
         <p class="text-red-600 text-sm mt-1" id="error-due_date"></p>
     </div>
 
+    @if (is_null($task))
+        <!-- Sync with Google Calendar -->
+        <div class="mb-4">
+            <label class="inline-flex items-center">
+                <input type="checkbox" name="sync_with_google_calendar" id="sync_with_google_calendar"
+                       class="form-checkbox text-blue-600" />
+                <span class="ml-2 text-sm">Sync with Google Calendar</span>
+            </label>
+            <p class="text-red-600 text-sm mt-1" id="error-sync_with_google_calendar"></p>
+        </div>
+    @endif
+
     <button type="submit"
             class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Save Task</button>
 </form>

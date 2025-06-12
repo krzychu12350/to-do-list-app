@@ -64,6 +64,15 @@
             renderTasks(data.data || []);
         }
 
+        function formatDateToDMY(dateString) {
+            const date = new Date(dateString);
+            if (isNaN(date)) return ''; // handle invalid dates gracefully
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0'); // months are 0-indexed
+            const year = date.getFullYear();
+            return `${day}-${month}-${year}`;
+        }
+
         function renderTasks(tasks) {
             tasksList.innerHTML = '';
             if (tasks.length === 0) {
@@ -74,6 +83,9 @@
             tasks.forEach(task => {
                 const div = document.createElement('div');
                 div.className = "border rounded p-4 flex justify-between items-center";
+
+                const formattedDueDate = formatDateToDMY(task.due_date);
+
                 div.innerHTML = `
             <div>
                 <h4 class="font-semibold text-lg">${task.name}</h4>
@@ -81,7 +93,7 @@
                 <p class="text-xs text-gray-500 mt-1">
                     Priority: <span class="capitalize">${task.priority}</span> |
                     Status: <span class="capitalize">${task.status}</span> |
-                    Due: ${task.due_date}
+                    Due: ${formattedDueDate}
                 </p>
             </div>
             <div class="space-x-2">

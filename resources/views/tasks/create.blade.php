@@ -26,6 +26,7 @@
                 priority: form.priority.value,
                 status: form.status.value,
                 due_date: form.due_date.value,
+                sync_with_google_calendar: form.sync_with_google_calendar?.checked ? "1" : "0"
             };
 
             // Clear previous error messages

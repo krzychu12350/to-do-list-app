@@ -27,6 +27,20 @@ class StoreTaskRequest extends FormRequest
             'priority' => 'required|in:low,medium,high',
             'status' => 'required|in:to-do,in progress,done',
             'due_date' => 'required|date|after_or_equal:today',
+            'sync_with_google_calendar' => 'nullable|boolean',
         ];
+    }
+
+    /**
+     * Override validated() to ensure sync_with_google_calendar is always a boolean.
+     */
+    public function validated($key = null, $default = null)
+    {
+        $data = parent::validated($key, $default);
+
+        // Force boolean casting here
+        $data['sync_with_google_calendar'] = $this->boolean('sync_with_google_calendar', false);
+
+        return $data;
     }
 }
