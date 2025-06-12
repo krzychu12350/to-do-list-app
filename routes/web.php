@@ -40,32 +40,20 @@ Route::middleware('auth.token')->group(function () {
         return view('dashboard');
     })->name('dashboard');
 
+    Route::group(['name' => 'web'], function () {
+        // Task views
+        Route::get('/tasks', [TaskViewController::class, 'index'])->name('tasks.index');
+        Route::get('/tasks/create', [TaskViewController::class, 'create'])->name('tasks.create');
 
-    Route::view('/tasks', 'tasks.index')->name('tasks.index');
-    Route::view('/tasks/create', 'tasks.create')->name('tasks.create');
+        // Don't pass Task model to view
+        Route::get('/tasks/{task}/edit', [TaskViewController::class, 'edit'])->name('tasks.edit');
+        Route::get('/tasks/{task}', [TaskViewController::class, 'show'])->name('tasks.show');
 
-    //don't pass task into view
-    Route::get('/tasks/{task}/edit', function (\App\Models\Task $task) {
-        return view('tasks.edit', compact('task'));
-    })->name('tasks.edit');
-
-    //don't pass task into view
-    Route::get('/tasks/{task}', function (\App\Models\Task $task) {
-        return view('tasks.show', compact('task'));
-    })->name('tasks.show');
-
-    Route::get('/tasks/{task}/share', [TaskViewController::class, 'showShareForm'])->name('tasks.share.form');
-    Route::get('/tasks/{task}/history', [TaskViewController::class, 'showTaskHistory'])->name('tasks.history');
+        // Additional views
+        Route::get('/tasks/{task}/share', [TaskViewController::class, 'showShareForm'])->name('tasks.share');
+        Route::get('/tasks/{task}/history', [TaskViewController::class, 'showTaskHistory'])->name('tasks.history');
+    });
 });
-
-
-
-
-
-
-
-
-
 
 
 Route::get('test', function () {
@@ -105,13 +93,13 @@ Route::get('/test-email', function () {
         ->get()
         ->groupBy('user_id');
 
-   // dd($tasksDueTomorrow);
+    // dd($tasksDueTomorrow);
 
     foreach ($tasksDueTomorrow as $userId => $tasks) {
         $user = User::find($userId);
 //        dd($user, $tasks, $dueDate);
 
-       Mail::to($user->email)->send(new TaskDueSoonNotification($user, $tasks, $dueDate));
+        Mail::to($user->email)->send(new TaskDueSoonNotification($user, $tasks, $dueDate));
     }
 
 

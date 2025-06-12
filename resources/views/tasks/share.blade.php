@@ -86,11 +86,11 @@
                     body: JSON.stringify({ expires_at: expiresAt })
                 });
 
-                if (!response.ok) throw new Error('Failed to generate public link');
+                if (!response.ok) throw new Error('You are not authorized to generate public link for this task');
 
                 const data = await response.json();
-                const link = data.public_link;
-
+                const link = data.data.public_link;
+                console.log(link)
                 await navigator.clipboard.writeText(link);
 
                 const resultDiv = document.getElementById('result');

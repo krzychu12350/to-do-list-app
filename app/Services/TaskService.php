@@ -9,6 +9,7 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class TaskService implements TaskServiceInterface
 {
@@ -48,13 +49,13 @@ class TaskService implements TaskServiceInterface
 
     public function get(Task $task): Task
     {
-        $this->authorize($task);
+        Gate::authorize('view', $task);
         return $task;
     }
 
     public function update(Task $task, array $data): Task
     {
-        $this->authorize($task);
+        Gate::authorize('update', $task);
 
         // Check if there is any difference between original and new data
         $original = $task->getOriginal();
@@ -84,7 +85,7 @@ class TaskService implements TaskServiceInterface
 
     public function delete(Task $task): void
     {
-        $this->authorize($task);
+        Gate::authorize('delete', $task);
         $task->delete();
     }
 

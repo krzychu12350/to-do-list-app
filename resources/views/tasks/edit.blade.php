@@ -3,23 +3,99 @@
 @section('content')
     <div class="max-w-2xl mx-auto bg-white shadow-md rounded p-6">
         <h2 class="text-xl font-bold mb-4">Edit Task</h2>
-        @include('tasks.partials.form', [
-            'method' => 'PUT',
-            'url' => route('api.tasks.update', $task->id),
-            'task' => $task,
-        ])
+
+        <form method="POST" id="task-form">
+            @csrf
+            @method('PUT')
+
+            <!-- Same form structure as in create.blade.php, but without the checkbox block -->
+            <div class="mb-4">
+                <label for="name" class="block text-sm font-medium">Name</label>
+                <input type="text" name="name" id="name" class="w-full border rounded px-3 py-2" />
+                <p class="text-red-600 text-sm mt-1" id="error-name"></p>
+            </div>
+
+            <div class="mb-4">
+                <label for="description" class="block text-sm font-medium">Description</label>
+                <textarea name="description" id="description" class="w-full border rounded px-3 py-2"></textarea>
+                <p class="text-red-600 text-sm mt-1" id="error-description"></p>
+            </div>
+
+            <div class="mb-4">
+                <label for="priority" class="block text-sm font-medium">Priority</label>
+                <select name="priority" id="priority" class="w-full border rounded px-3 py-2">
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                </select>
+                <p class="text-red-600 text-sm mt-1" id="error-priority"></p>
+            </div>
+
+            <div class="mb-4">
+                <label for="status" class="block text-sm font-medium">Status</label>
+                <select name="status" id="status" class="w-full border rounded px-3 py-2">
+                    <option value="to-do">To-Do</option>
+                    <option value="in progress">In Progress</option>
+                    <option value="done">Done</option>
+                </select>
+                <p class="text-red-600 text-sm mt-1" id="error-status"></p>
+            </div>
+
+            <div class="mb-4">
+                <label for="due_date" class="block text-sm font-medium">Due Date</label>
+                <input type="date" name="due_date" id="due_date" class="w-full border rounded px-3 py-2" />
+                <p class="text-red-600 text-sm mt-1" id="error-due_date"></p>
+            </div>
+
+            <button type="submit"
+                    class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Update Task</button>
+        </form>
     </div>
 @endsection
 
 @section('scripts')
     <script>
-        document.querySelector('form').addEventListener('submit', async function(e) {
+        const match = window.location.pathname.match(/\/tasks\/(\d+)\/edit/);
+        const taskId = match ? match[1] : null;
+        const apiUrl = '{{ route("api.tasks.show", ":id") }}'.replace(':id', taskId);
+        const updateUrl = '{{ route("api.tasks.update", ":id") }}'.replace(':id', taskId);
+        const bearerToken = localStorage.getItem('auth_token');
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const form = document.getElementById('task-form');
+            form.action = updateUrl;
+
+            try {
+                const res = await fetch(apiUrl, {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': 'Bearer ' + bearerToken,
+                    }
+                });
+
+                const json = await res.json();
+                console.log('Fetched task data:', json);
+
+                if (!res.ok) throw new Error(json.message || 'Failed to load task');
+
+                const data = json.data || json;
+
+                form.name.value = data.name || '';
+                form.description.value = data.description || '';
+                form.priority.value = data.priority || 'low';
+                form.status.value = data.status || 'to-do';
+                form.due_date.value = data.due_date ? data.due_date.slice(0, 10) : '';
+            } catch (error) {
+                alert('Error loading task: ' + error.message);
+            }
+        });
+
+
+        document.querySelector('#task-form').addEventListener('submit', async function(e) {
             e.preventDefault();
 
             const form = e.target;
-            const url = form.action;
             const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-            const bearerToken = localStorage.getItem('auth_token');
 
             const data = {
                 name: form.name.value.trim(),
@@ -29,14 +105,13 @@
                 due_date: form.due_date.value,
             };
 
-            // Clear previous error messages
             ['name', 'description', 'priority', 'status', 'due_date'].forEach(field => {
                 const errorEl = document.getElementById(`error-${field}`);
                 if (errorEl) errorEl.textContent = '';
             });
 
             try {
-                const res = await fetch(url, {
+                const res = await fetch(form.action, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',

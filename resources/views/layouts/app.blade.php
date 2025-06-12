@@ -38,7 +38,6 @@
     if (token) {
         // Authenticated UI
         authHeader.innerHTML = `
-            <a href="/dashboard" class="btn">Dashboard</a>
             <a href="/tasks" class="btn">Tasks</a>
             <form method="POST" action="{{ route('logout') }}" onsubmit="event.preventDefault(); logout();">
                 <button type="submit" class="btn">Logout</button>

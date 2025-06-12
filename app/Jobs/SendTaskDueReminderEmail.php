@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Enums\TaskStatus;
 use App\Mail\TaskDueSoonNotification;
 use App\Models\Task;
 use App\Models\User;
@@ -34,6 +35,7 @@ class SendTaskDueReminderEmail implements ShouldQueue
     {
         $tasksDueTomorrow = Task::with('user')
             ->whereDate('due_date', '=', $this->dueDate)
+            ->where('status', '!=', TaskStatus::DONE)
             ->get()
             ->groupBy('user_id');
 
@@ -43,6 +45,5 @@ class SendTaskDueReminderEmail implements ShouldQueue
 
             Mail::to($user->email)->send(new TaskDueSoonNotification($user, $tasks, $this->dueDate));
         }
-
     }
 }

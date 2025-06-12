@@ -3,16 +3,72 @@
 @section('content')
     <div class="max-w-2xl mx-auto bg-white shadow-md rounded p-6">
         <h2 class="text-xl font-bold mb-4">Create Task</h2>
-        @include('tasks.partials.form', [
-            'method' => 'POST',
-            'url' => route('api.tasks.store'),
-            'task' => null,
-        ])
+
+        <form method="POST" action="{{ route('api.tasks.store') }}" id="task-form">
+            @csrf
+
+            <!-- Name -->
+            <div class="mb-4">
+                <label for="name" class="block text-sm font-medium">Name</label>
+                <input type="text" name="name" id="name" class="w-full border rounded px-3 py-2" />
+                <p class="text-red-600 text-sm mt-1" id="error-name"></p>
+            </div>
+
+            <!-- Description -->
+            <div class="mb-4">
+                <label for="description" class="block text-sm font-medium">Description</label>
+                <textarea name="description" id="description" class="w-full border rounded px-3 py-2"></textarea>
+                <p class="text-red-600 text-sm mt-1" id="error-description"></p>
+            </div>
+
+            <!-- Priority -->
+            <div class="mb-4">
+                <label for="priority" class="block text-sm font-medium">Priority</label>
+                <select name="priority" id="priority" class="w-full border rounded px-3 py-2">
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                </select>
+                <p class="text-red-600 text-sm mt-1" id="error-priority"></p>
+            </div>
+
+            <!-- Status -->
+            <div class="mb-4">
+                <label for="status" class="block text-sm font-medium">Status</label>
+                <select name="status" id="status" class="w-full border rounded px-3 py-2">
+                    <option value="to-do">To-Do</option>
+                    <option value="in progress">In Progress</option>
+                    <option value="done">Done</option>
+                </select>
+                <p class="text-red-600 text-sm mt-1" id="error-status"></p>
+            </div>
+
+            <!-- Due Date -->
+            <div class="mb-4">
+                <label for="due_date" class="block text-sm font-medium">Due Date</label>
+                <input type="date" name="due_date" id="due_date" class="w-full border rounded px-3 py-2" />
+                <p class="text-red-600 text-sm mt-1" id="error-due_date"></p>
+            </div>
+
+            <!-- Sync with Google Calendar -->
+            <div class="mb-4">
+                <label class="inline-flex items-center">
+                    <input type="checkbox" name="sync_with_google_calendar" id="sync_with_google_calendar"
+                           class="form-checkbox text-blue-600" />
+                    <span class="ml-2 text-sm">Sync with Google Calendar</span>
+                </label>
+                <p class="text-red-600 text-sm mt-1" id="error-sync_with_google_calendar"></p>
+            </div>
+
+            <button type="submit"
+                    class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Save Task</button>
+        </form>
     </div>
 @endsection
+
 @section('scripts')
     <script>
-        document.querySelector('form').addEventListener('submit', async function(e) {
+        document.querySelector('#task-form').addEventListener('submit', async function(e) {
             e.preventDefault();
 
             const form = e.target;
@@ -26,10 +82,9 @@
                 priority: form.priority.value,
                 status: form.status.value,
                 due_date: form.due_date.value,
-                sync_with_google_calendar: form.sync_with_google_calendar?.checked ? "1" : "0"
+                sync_with_google_calendar: form.sync_with_google_calendar.checked ? "1" : "0"
             };
 
-            // Clear previous error messages
             ['name', 'description', 'priority', 'status', 'due_date'].forEach(field => {
                 const errorEl = document.getElementById(`error-${field}`);
                 if (errorEl) errorEl.textContent = '';

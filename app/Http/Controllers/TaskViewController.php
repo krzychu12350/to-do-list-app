@@ -2,16 +2,27 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Task;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class TaskViewController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
-
         return view('tasks.index');
+    }
+
+    public function create()
+    {
+        return view('tasks.create');
+    }
+
+    public function edit()
+    {
+        return view('tasks.edit');
+    }
+
+    public function show()
+    {
+        return view('tasks.show');
     }
 
     public function showShareForm()

@@ -7,12 +7,17 @@
 
         <div class="mb-4">
             <label for="email" class="block text-sm mb-1">Email</label>
-            <input type="email" name="email" id="email" required class="input">
+            <input type="email" name="email" id="email" required class="input" />
         </div>
 
         <div class="mb-4">
             <label for="password" class="block text-sm mb-1">Password</label>
-            <input type="password" name="password" id="password" required class="input">
+            <input type="password" name="password" id="password" required class="input" />
+        </div>
+
+        <div class="mb-4">
+            <p id="error-email" class="text-red-600 text-sm mt-1"></p>
+            <p id="error-password" class="text-red-600 text-sm mt-1"></p>
         </div>
 
         <button type="submit" class="btn w-full">Login</button>
@@ -22,6 +27,10 @@
     <script>
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
+
+            // Clear previous errors
+            document.getElementById('error-email').textContent = '';
+            document.getElementById('error-password').textContent = '';
 
             const formData = {
                 email: this.email.value,
@@ -39,15 +48,23 @@
                 });
 
                 const data = await response.json();
-                const token = data.data.token;
-                console.log(data.data.token);
 
                 if (response.ok) {
                     alert(data.message || 'Login successful!');
-                    localStorage.setItem('auth_token', token);
-                    window.location.href = '/dashboard'; // Redirect as needed
+                    localStorage.setItem('auth_token', data.data.token);
+                    window.location.href = '/tasks'; // Redirect as needed
                 } else {
-                    alert(data.message || 'Login failed!');
+                    // Display validation errors for email and password if they exist
+                    if (data.errors) {
+                        if (data.errors.email) {
+                            document.getElementById('error-email').textContent = data.errors.email[0];
+                        }
+                        if (data.errors.password) {
+                            document.getElementById('error-password').textContent = data.errors.password[0];
+                        }
+                    } else {
+                        alert(data.message || 'Login failed!');
+                    }
                 }
             } catch (error) {
                 alert('Unexpected error: ' + error.message);

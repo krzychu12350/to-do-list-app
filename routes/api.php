@@ -3,9 +3,9 @@
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\TaskController;
 use App\Http\Controllers\API\TaskHistoryController;
+use App\Http\Controllers\API\TaskTokenController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\TaskShareController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -14,9 +14,7 @@ Route::get('/user', function (Request $request) {
 
 Route::prefix('auth')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
-
     Route::post('/login', [AuthController::class, 'login']);
-
     Route::middleware('auth:sanctum')
         ->delete('/logout', [AuthController::class, 'logout']);
 });
@@ -28,5 +26,5 @@ Route::middleware('auth:sanctum')
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/tasks/{task}/history', [TaskHistoryController::class, 'index']);
-    Route::post('/tasks/{task}/share', [TaskShareController::class, 'generateLink']);
+    Route::post('/tasks/{task}/share', [TaskTokenController::class, 'generateLink']);
 });
